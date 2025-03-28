@@ -25,7 +25,6 @@ tippecanoe \
 TYPE=fude PREF=#{pref} ruby stream.rb | \
 tippecanoe \
 --quiet \
--x 筆ID \
 -x version \
 -x 代表点緯度 \
 -x 代表点経度 \
