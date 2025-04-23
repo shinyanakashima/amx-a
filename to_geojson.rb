@@ -10,7 +10,7 @@ Dir.mktmpdir do |tmpdir|
 unzip -qq -d #{tmpdir} #{path}; \
 mojxml2geojson -e #{tmpdir}/#{bn}.xml; \
 cat #{tmpdir}/#{bn}.geojson | tippecanoe-json-tool | \
-grep -v 任意座標 | ruby #{type}.rb
+grep -v 任意座標 | BASENAME=#{bn} ruby #{type}.rb
   EOS
 end
 
