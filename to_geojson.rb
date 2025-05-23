@@ -23,7 +23,7 @@ mojxml2geojson -e #{tmpdir}/#{bn}.xml
     # 出力ディレクトリ
     outdir = "/app/tmp/#{pref}/#{group_key}"
     FileUtils.mkdir_p(outdir)
-    out_path = "#{outdir}/#{bn}.geojson"
+    out_path = "#{outdir}/#{bn}.ndjson"
 
     system <<-EOS
 cat #{geojson_path} | tippecanoe-json-tool | \
