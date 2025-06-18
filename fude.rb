@@ -28,7 +28,7 @@ while gets
   end
   f[:tippecanoe] = {
     :layer => 'fude',
-    :minzoom => 14,
+    :minzoom => 12,
     :maxzoom => 16
   }
   print "\x1e#{JSON.dump(f)}\n"
