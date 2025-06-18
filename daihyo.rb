@@ -7,7 +7,7 @@ while gets
     :tippecanoe => {
       :layer => 'daihyo',
       :minzoom => 2,
-      :maxzoom => 13
+      :maxzoom => 11
     },
     :properties => {},
     :geometry => {
