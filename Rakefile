@@ -30,8 +30,9 @@ tippecanoe \
 -x 代表点経度 \
 --minimum-zoom=12 \
 --maximum-zoom=16 \
+--no-tile-size-limit \
 -f -o output/#{pref}-fude.mbtiles; \
-tile-join -f -o output/#{pref}.mbtiles output/#{pref}-fude.mbtiles output/#{pref}-daihyo.mbtiles;
+tile-join --no-tile-size-limit -f -o output/#{pref}.mbtiles output/#{pref}-fude.mbtiles output/#{pref}-daihyo.mbtiles;
     EOS
   end
 end
