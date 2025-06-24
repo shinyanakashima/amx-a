@@ -20,7 +20,7 @@ tippecanoe \
 -x 代表点緯度 \
 -x 代表点経度 \
 --minimum-zoom=2 \
---maximum-zoom=13 \
+--maximum-zoom=11 \
 -f -o output/#{pref}-daihyo.mbtiles; \
 TYPE=fude PREF=#{pref} ruby stream.rb | \
 tippecanoe \
@@ -28,10 +28,11 @@ tippecanoe \
 -x version \
 -x 代表点緯度 \
 -x 代表点経度 \
---minimum-zoom=14 \
+--minimum-zoom=12 \
 --maximum-zoom=16 \
+--no-tile-size-limit \
 -f -o output/#{pref}-fude.mbtiles; \
-tile-join -f -o output/#{pref}.mbtiles output/#{pref}-fude.mbtiles output/#{pref}-daihyo.mbtiles;
+tile-join --no-tile-size-limit -f -o output/#{pref}.mbtiles output/#{pref}-fude.mbtiles output/#{pref}-daihyo.mbtiles;
     EOS
   end
 end
@@ -49,17 +50,17 @@ desc 'create pmtiles'
 task :pmtiles do
   sh <<-EOS
 tile-join -f --no-tile-size-limit \
---minimum-zoom=14 --maximum-zoom=16 \
+--minimum-zoom=12 --maximum-zoom=16 \
 -o output/a-fude.mbtiles #{files.join(' ')}; \
 (parallel -P 2 --eta --line-buffer \
 "tippecanoe-decode \
--Z 13 -z 13 {} | tippecanoe-json-tool" \
+-Z 11 -z 11 {} | tippecanoe-json-tool" \
 ::: #{files.join(' ')}) | \
 tippecanoe \
 -r3 \
 --drop-densest-as-needed \
 --minimum-zoom=2 \
---maximum-zoom=13 \
+--maximum-zoom=11 \
 --layer=daihyo \
 -f -o output/a-daihyo.mbtiles; \
 tile-join -f --no-tile-size-limit -o output/amx-a_all.mbtiles output/a-fude.mbtiles output/a-daihyo.mbtiles; \
