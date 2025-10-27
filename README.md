@@ -1,6 +1,10 @@
 # amx-a
-## Overview
-[amx-a](https://github.com/amx-project/a)を動かすためには環境構築が必要であり、それを維持しやすいようにコンテナ化する。
+法務省が提供する登記所備付地図データからベクトルタイル（`PMTiels`）を生成するコンテナを提供する。
+[amx-a](https://github.com/amx-project/a)をコンテナで動かせるようにし、独自のIDを附番できるようにした。
+
+# Demo
+[登記所備付地図ツール Mabiki2.0](https://zksdx.org/map/mabiki/v2.0/mojmap-mabiki-2.0-vanilla/)
+<img width="1905" height="982" alt="image" src="https://github.com/user-attachments/assets/b90bc0b3-7b66-4b0f-ab08-b3cc102d9b25" />
 
 ### build
 
@@ -42,13 +46,6 @@ podman run --rm -v ".:/usr/src/app" -w /usr/src/app ruby:3.1-slim bundle install
 
 〰️〰️〰️〰️〰️〰️〰️〰️〰️〰️〰️
 
-Implementation of https://github.com/amx-project/0/issues/4
-
-## Demo
-https://amx-project.github.io/a
-
-### PMTiles location on IPFS
-QmTZHWMAnRC5zNiNvdVuTDacThKkj4jKbwsZtKQkAC4R69
 
 ## Document
 https://github.com/amx-project/a-spec
