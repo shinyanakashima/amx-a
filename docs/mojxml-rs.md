@@ -28,6 +28,26 @@ mojxml-rs で pref 単位の raw NDJSON を作成（output/{pref}.raw.geojson）
 XML パースは pref あたり 1 回のみ。既存方式は daihyo / fude で `stream.rb` を 2 回走らせ、XML を
 二重パースしていたが、その重複を解消している。
 
+## FGB 生成パイプライン（geo-ditto-fgb）との連携
+
+表示用の PMTiles とは別に、地物選択→エクスポートのために
+[`geo-ditto-fgb`](https://github.com/shinyanakashima/geo-ditto-fgb) が FlatGeobuf を生成する。
+PMTiles と FGB は**同一の `global_id` で突合**するため、両者は同じ NDJSON 由来である必要がある。
+
+`mbtiles_rs` では `fude_from_mojxml_rs.rb` に `NDJSON_OUT=tmp` を渡し、tippecanoe へ流すのと
+同じ NDJSON を、市区町村コード単位で次の場所に保存する。
+
+```text
+tmp/{pref}/{市区町村コード}/{市区町村コード}.ndjson
+```
+
+`geo-ditto-fgb` はこの階層を走査して市区町村コード単位の FGB を作り、`merged.fgb` に統合する。
+
+- `global_id` を持つ地物のみ書き出す（マッチング不能な地物は除外）。
+- 市区町村コード単位に分割するのは、FGB 1 ファイルあたりのサイズ・メモリを抑えるため。
+- 可視化アプリは `merged.fgb` を読み、`global_id` で PMTiles の選択地物と突合する。
+  そのため FGB の個別ファイル名は内部的な詳細で、アプリには影響しない。
+
 ## 出力フォーマットの差分（mojxml2geojson との比較）
 
 - `mojxml-rs` は newline-delimited GeoJSON を出力する（`tippecanoe-json-tool` での分割は不要）。

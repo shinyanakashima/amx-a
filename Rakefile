@@ -56,9 +56,11 @@ task :mbtiles_rs do
     sh "mojxml-rs #{raw} #{zips.join(' ')}"
 
     # 1 度の変換結果（raw）から fude / daihyo を生成し、XML の二重パースを避ける。
+    # fude は tippecanoe へ流しつつ、NDJSON_OUT に市区町村コード単位の中間 NDJSON を
+    # 書き出して FGB 生成パイプライン（geo-ditto-fgb）へ連携する。
     sh <<-EOS
 cat #{raw} | PREF=#{pref} ruby daihyo_from_mojxml_rs.rb | #{daihyo_tippecanoe(pref)}; \
-cat #{raw} | PREF=#{pref} ruby fude_from_mojxml_rs.rb | #{fude_tippecanoe(pref)}; \
+cat #{raw} | PREF=#{pref} NDJSON_OUT=tmp ruby fude_from_mojxml_rs.rb | #{fude_tippecanoe(pref)}; \
 #{join_layers(pref)};
     EOS
   end
