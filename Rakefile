@@ -26,8 +26,9 @@ def join_layers(pref)
   "output/#{pref}-fude.mbtiles output/#{pref}-daihyo.mbtiles"
 end
 
-desc 'create mbtiles'
-task :mbtiles do
+# 旧経路（mojxml2geojson + fude.rb / daihyo.rb）。フォールバック・比較検証用に残す。
+desc 'create mbtiles (legacy: mojxml2geojson)'
+task :mbtiles_legacy do
   pref_range.each do |pref|
     next if File.exist?("#{pref}.mbtiles")
     $stderr.print "#{Time.now}: #{pref}\n"
@@ -39,8 +40,8 @@ TYPE=fude PREF=#{pref} ruby stream.rb | #{fude_tippecanoe(pref)}; \
   end
 end
 
-desc 'create mbtiles using mojxml-rs (Rust frontend)'
-task :mbtiles_rs do
+desc 'create mbtiles (mojxml-rs / Rust frontend)'
+task :mbtiles do
   pref_range.each do |pref|
     next if File.exist?("output/#{pref}.mbtiles")
     zips = Dir.glob("src/**/#{pref}*-*-*.zip").sort
