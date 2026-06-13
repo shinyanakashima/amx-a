@@ -1,17 +1,17 @@
-# mojxml-rs 導入による前段処理の Rust 化（検証用メモ）
+# mojxml-rs 導入による前段処理の Rust 化（構成メモ）
 
 地図XML → GeoJSON/NDJSON 変換の前段を [`KotobaMedia/mojxml-rs`](https://github.com/KotobaMedia/mojxml-rs)
-（Rust 実装・MIT License）へ置き換える検証のための構成。既存方式（`mojxml2geojson` + `fude.rb` / `daihyo.rb`）は
-そのまま残し、いつでも切り替え・比較できるようにしている。
+（Rust 実装・MIT License）へ置き換えた構成。`rake mbtiles` が mojxml-rs 方式（既定）で、
+旧方式（`mojxml2geojson` + `fude.rb` / `daihyo.rb`）は `rake mbtiles_legacy` としてフォールバック・比較用に残している。
 
 ## 構成
 
-| 役割 | 既存方式 | mojxml-rs 方式 |
+| 役割 | 旧方式（legacy） | mojxml-rs 方式（既定） |
 | --- | --- | --- |
 | XML → GeoJSON | `mojxml2geojson`（Python, zip ごと） | `mojxml-rs`（Rust, zip 群を一括・並列） |
 | fude 後処理 | `fude.rb` | `fude_from_mojxml_rs.rb` |
 | daihyo 後処理 | `daihyo.rb` | `daihyo_from_mojxml_rs.rb` |
-| Rake task | `rake mbtiles` | `rake mbtiles_rs` |
+| Rake task | `rake mbtiles_legacy` | `rake mbtiles` |
 
 `rake pmtiles` / `rake style` は両方式で共通（成果物は `output/{pref}.mbtiles` に揃える）。
 
@@ -34,7 +34,7 @@ XML パースは pref あたり 1 回のみ。既存方式は daihyo / fude で 
 [`geo-ditto-fgb`](https://github.com/shinyanakashima/geo-ditto-fgb) が FlatGeobuf を生成する。
 PMTiles と FGB は**同一の `global_id` で突合**するため、両者は同じ NDJSON 由来である必要がある。
 
-`mbtiles_rs` では `fude_from_mojxml_rs.rb` に `NDJSON_OUT=tmp` を渡し、tippecanoe へ流すのと
+`mbtiles` タスクでは `fude_from_mojxml_rs.rb` に `NDJSON_OUT=tmp` を渡し、tippecanoe へ流すのと
 同じ NDJSON を、市区町村コード単位で次の場所に保存する。
 
 ```text
@@ -76,21 +76,22 @@ cat output/01.raw.geojson | PREF=01 ruby daihyo_from_mojxml_rs.rb > new-daihyo.n
 wc -l old-fude.ndjson new-fude.ndjson
 ```
 
-## ベンチマーク（Step 5）
+## ベンチマーク
 
 ```bash
-START_PREF=1 END_PREF=1 /usr/bin/time -v rake mbtiles
-START_PREF=1 END_PREF=1 /usr/bin/time -v rake mbtiles_rs
+START_PREF=1 END_PREF=1 /usr/bin/time -v rake mbtiles_legacy   # 旧方式
+START_PREF=1 END_PREF=1 /usr/bin/time -v rake mbtiles          # mojxml-rs 方式（既定）
 /usr/bin/time -v rake pmtiles
 ```
 
-比較対象：1 zip / 1 市区町村 / 北海道全体（pref=01）で、既存方式と mojxml-rs 方式の処理時間・メモリ使用量・
+比較対象：1 zip / 1 市区町村 / 北海道全体（pref=01）で、旧方式と mojxml-rs 方式の処理時間・メモリ使用量・
 成果物（件数・属性・ID・見た目）を確認する。
 
 > 大規模データで `/tmp` の容量が足りない場合は `mojxml-rs -t <dir> ...` で展開先を指定する。
 
 ## 切り替え
 
-- 既存方式に戻す場合は `rake mbtiles` を使う。
+- 既定は `rake mbtiles`（mojxml-rs 方式）。`docker-compose.yaml` もこれを呼ぶ。
+- 旧方式に戻す場合は `rake mbtiles_legacy` を使う。
 - どちらも `output/{pref}.mbtiles` を生成するため、比較する際は出力先を分けるか、片方ずつ実行する。
 - `mojxml-rs` バイナリのバージョンは Dockerfile の `MOJXML_RS_VERSION`（既定 `v0.3.0`）で固定している。
